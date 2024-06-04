@@ -30,7 +30,8 @@ contract Dex223AutoListing {
         address erc223;
     }
 
-    mapping(address => bool) public listed_tokens;
+    mapping(address => bool)  public listed_tokens;
+    mapping(uint256 => Token) public tokens;
 
     event TokenListed(address indexed token_erc20, address indexed token_erc223);
     event PairListed(address indexed token0_erc20, address token0_erc223, address indexed token1_erc20, address token1_erc223, address indexed pool, uint256 feeTier);
@@ -43,6 +44,9 @@ contract Dex223AutoListing {
         address token2_erc223;
         mapping (uint24 => address) pools; // fee tier => pool address
     }
+
+    uint256 public last_update;
+    uint256 public num_listed_tokens;
 
     mapping(uint256 => TradeablePair) public pairs; // index => pair
 
@@ -66,14 +70,19 @@ contract Dex223AutoListing {
         if(!isListed(_token0_erc20) || !isListed(_token0_erc223))
         {
             emit TokenListed(_token0_erc20, _token0_erc223);
+            tokens[num_listed_tokens] = Token(_token0_erc20, _token0_erc223);
+            num_listed_tokens++;
         } 
 
         if(!isListed(_token1_erc20) || !isListed(_token1_erc223))
         {
             emit TokenListed(_token1_erc20, _token1_erc223);
+            tokens[num_listed_tokens] = Token(_token1_erc20, _token1_erc223);
+            num_listed_tokens++;
         }
 
         emit PairListed(_token0_erc20, _token0_erc223, _token1_erc20, _token1_erc223, pool, feeTier);
+        last_update = block.timestamp;
     }
 
     function checkListingCriteria() internal view returns (bool)
@@ -85,5 +94,10 @@ contract Dex223AutoListing {
         // Free-listing contract does not require anything so it will automatically pass.
 
         return true;
+    }
+
+    function getToken(uint256 index) public view returns (address _erc20, address _erc223)
+    {
+        return (tokens[index].erc20, tokens[index].erc223);
     }
 }
