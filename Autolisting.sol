@@ -4,7 +4,7 @@ pragma solidity =0.7.6;
 //import './interfaces/IUniswapV3Pool.sol';
 import './interfaces/IDex223Factory.sol';
 
-contract IDexPool 
+contract IDexPool
 {
     struct Token
     {
@@ -19,7 +19,7 @@ contract IDexPool
 contract Dex223AutoListing {
     IDex223Factory factory;
 
-    constructor(address _factory) 
+    constructor(address _factory)
     {
         factory = IDex223Factory(_factory);
     }
@@ -55,7 +55,7 @@ contract Dex223AutoListing {
         return listed_tokens[_token];
     }
 
-    function list(address pool, uint24 feeTier) public 
+    function list(address pool, uint24 feeTier) public
     {
         require(checkListingCriteria());
         IDexPool _pool = IDexPool(pool);
@@ -72,7 +72,7 @@ contract Dex223AutoListing {
             emit TokenListed(_token0_erc20, _token0_erc223);
             tokens[num_listed_tokens] = Token(_token0_erc20, _token0_erc223);
             num_listed_tokens++;
-        } 
+        }
 
         if(!isListed(_token1_erc20) || !isListed(_token1_erc223))
         {
@@ -90,7 +90,7 @@ contract Dex223AutoListing {
         // This function implements custom logic of listing an asset
         // in this exact contract.
         // It may require payments or some liquidity criteria.
-        
+
         // Free-listing contract does not require anything so it will automatically pass.
 
         return true;
